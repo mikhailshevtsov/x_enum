@@ -60,7 +60,7 @@ public: \
     } \
 }; \
 \
-IN_CLASS constexpr X_ENUM_TRAITS(ENUM_NAME) X_enum_traits(ENUM_NAME) noexcept; \
+IN_CLASS constexpr X_ENUM_TRAITS(ENUM_NAME) x_enum_traits(ENUM_NAME) noexcept { return {}; } \
 
 #define X_DEFINE_ENUM_TRAITS(ENUM_NAME) X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME,)
 #define X_DEFINE_ENUM_TRAITS_IN_CLASS(ENUM_NAME) X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME, friend)
@@ -139,7 +139,7 @@ template <typename, typename = void>
 struct is_enum : std::false_type {};
 
 template <typename T>
-struct is_enum<T, void_t<decltype(X_enum_traits(T{}))>> : std::true_type {};
+struct is_enum<T, void_t<decltype(x_enum_traits(T{}))>> : std::true_type {};
 
 template <typename T>
 constexpr bool is_enum_v = is_enum<T>::value;
@@ -148,7 +148,7 @@ template <typename T>
 concept enumeration = is_enum_v<T>;
 
 template <enumeration EnumT>
-struct enum_traits : decltype(X_enum_traits(EnumT{})) {};
+struct enum_traits : decltype(x_enum_traits(EnumT{})) {};
 
 template <enumeration EnumT>
 using underlying_type_t = typename enum_traits<EnumT>::underlying_type;
