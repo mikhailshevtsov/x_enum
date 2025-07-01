@@ -5,6 +5,7 @@
 #include <array>
 #include <stdexcept>
 #include <string_view>
+#include <optional>
 
 #define X_FOREACH(ENUM_NAME) X_ ##ENUM_NAME
 
@@ -42,10 +43,7 @@ public: \
     \
     static constexpr const char* to_string(enum_type enumer) \
     { \
-        switch (enumer) \
-        { \
-            X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) \
-        } \
+        switch (enumer) { X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) } \
         return nullptr; \
     } \
 }; \
@@ -97,10 +95,7 @@ public: \
     \
     static constexpr const char* to_string(enum_type enumer) \
     { \
-        switch (enumer) \
-        { \
-            X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) \
-        } \
+        switch (enumer) { X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) } \
         return nullptr; \
     } \
 };
@@ -156,15 +151,18 @@ constexpr std::size_t to_index(EnumT enumer) noexcept
 }
 
 template <enumeration EnumT>
+constexpr const char* to_string(EnumT enumer) noexcept { return enum_traits<EnumT>::to_string(enumer); }
+
+template <enumeration EnumT>
+constexpr underlying_type_t<EnumT> to_value(EnumT enumer) noexcept { return static_cast<underlying_type_t<EnumT>>(enumer); }
+
+template <enumeration EnumT>
 constexpr EnumT from_index(std::size_t index)
 {
     if (index < enum_size<EnumT>())
         return enum_array<EnumT>()[index];
     throw std::out_of_range("enum index is out of range");
 }
-
-template <enumeration EnumT>
-constexpr const char* to_string(EnumT enumer) noexcept { return enum_traits<EnumT>::to_string(enumer); }
 
 template <enumeration EnumT>
 constexpr EnumT from_string(std::string_view name)
@@ -178,9 +176,6 @@ constexpr EnumT from_string(std::string_view name)
 }
 
 template <enumeration EnumT>
-constexpr underlying_type_t<EnumT> to_value(EnumT enumer) noexcept { return static_cast<underlying_type_t<EnumT>>(enumer); }
-
-template <enumeration EnumT>
 constexpr EnumT from_value(underlying_type_t<EnumT> value)
 {
     constexpr const auto& values = enum_values<EnumT>();
@@ -189,6 +184,36 @@ constexpr EnumT from_value(underlying_type_t<EnumT> value)
         if (values[i] == value)
             return static_cast<EnumT>(value);
     throw std::out_of_range("enum index is out of range");
+}
+
+template <enumeration EnumT>
+constexpr std::optional<EnumT> from_index_opt(std::size_t index) noexcept
+{
+    if (index < enum_size<EnumT>())
+        return enum_array<EnumT>()[index];
+    return {};
+}
+
+template <enumeration EnumT>
+constexpr std::optional<EnumT> from_string_opt(std::string_view name) noexcept
+{
+    constexpr const auto& names = enum_names<EnumT>();
+    constexpr std::size_t size = enum_size<EnumT>();
+    for (std::size_t i = 0; i < size; ++i)
+        if (names[i] == name)
+            return from_index<EnumT>(i);
+    return {};
+}
+
+template <enumeration EnumT>
+constexpr std::optional<EnumT> from_value_opt(underlying_type_t<EnumT> value) noexcept
+{
+    constexpr const auto& values = enum_values<EnumT>();
+    constexpr std::size_t size = enum_size<EnumT>();
+    for (std::size_t i = 0; i < size; ++i)
+        if (values[i] == value)
+            return static_cast<EnumT>(value);
+    return {};
 }
 
 }
