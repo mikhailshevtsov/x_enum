@@ -7,7 +7,7 @@
 #include <string_view>
 #include <optional>
 
-#define X_FOREACH(ENUM_NAME) X_ ##ENUM_NAME
+#define X_FOREACH(ENUM_NAME) X_##ENUM_NAME
 
 #define X_DEFINE_ENUMER(NAME, ...) NAME __VA_OPT__(=) __VA_ARGS__,
 #define X_ENUMER(NAME, ...) enum_type::NAME,
@@ -16,17 +16,10 @@
 #define X_ENUMER_TO_STRING(NAME, ...) case enum_type::NAME: return #NAME; break;
 
 #define X_DEFINE_ENUM_IMPL(ENUM_NAME, UNSCOPED, ...) enum UNSCOPED ENUM_NAME __VA_OPT__(:) __VA_ARGS__ { X_FOREACH(ENUM_NAME)(X_DEFINE_ENUMER) }
-
 #define X_DEFINE_ENUM(ENUM_NAME, ...) X_DEFINE_ENUM_IMPL(ENUM_NAME, class, __VA_ARGS__)
 #define X_DEFINE_ENUM_UNSCOPED(ENUM_NAME, ...) X_DEFINE_ENUM_IMPL(ENUM_NAME, , __VA_ARGS__)
 
-#define X_ENUM_TRAITS(ENUM_NAME) X_ ##ENUM_NAME ##_traits
-
-#define X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME, IN_CLASS) \
-class X_ENUM_TRAITS(ENUM_NAME) \
-{ \
-public: \
-    using enum_type = ENUM_NAME; \
+#define X_DEFINE_ENUM_TRAITS_BODY(ENUM_NAME) \
     using underlying_type = std::underlying_type_t<enum_type>; \
     \
 private: \
@@ -46,9 +39,18 @@ public: \
         switch (enumer) { X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) } \
         return nullptr; \
     } \
+
+#define X_ENUM_TRAITS(ENUM_NAME) X_##ENUM_NAME##_traits
+
+#define X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME, IN_CLASS) \
+class X_ENUM_TRAITS(ENUM_NAME) \
+{ \
+public: \
+    using enum_type = ENUM_NAME; \
+    X_DEFINE_ENUM_TRAITS_BODY(ENUM_NAME) \
 }; \
-\
 IN_CLASS constexpr X_ENUM_TRAITS(ENUM_NAME) x_enum_traits(x::tag<ENUM_NAME>) noexcept { return {}; } \
+static_assert(x::is_enum_v<ENUM_NAME>, "Usage X_ENUM inside the class scope");
 
 #define X_DEFINE_ENUM_TRAITS(ENUM_NAME) X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME,)
 #define X_DEFINE_ENUM_TRAITS_IN_CLASS(ENUM_NAME) X_DEFINE_ENUM_TRAITS_IMPL(ENUM_NAME, friend)
@@ -69,7 +71,6 @@ X_DEFINE_ENUM_TRAITS(ENUM_NAME)
 X_DEFINE_ENUM_UNSCOPED(ENUM_NAME, __VA_ARGS__); \
 X_DEFINE_ENUM_TRAITS_IN_CLASS(ENUM_NAME)
 
-
 #define X_DEFINE_ENUM_TRAITS_EXTERNAL(ENUM_NAME, ...) \
 template <typename T> \
 struct x::is_enum<__VA_ARGS__::ENUM_NAME, T> : std::true_type {}; \
@@ -79,25 +80,7 @@ class x::enum_traits<__VA_ARGS__::ENUM_NAME> \
 { \
 public: \
     using enum_type = __VA_ARGS__::ENUM_NAME; \
-    using underlying_type = std::underlying_type_t<enum_type>; \
-    \
-private: \
-    static constexpr enum_type _array[] { X_FOREACH(ENUM_NAME)(X_ENUMER) }; \
-    static constexpr const char* _names[] { X_FOREACH(ENUM_NAME)(X_ENUMER_NAME) }; \
-    static constexpr underlying_type _values[] { X_FOREACH(ENUM_NAME)(X_ENUMER_VALUE) }; \
-    \
-public: \
-    static constexpr const char* name() noexcept { return #ENUM_NAME; } \
-    static constexpr const auto& array() noexcept { return _array; } \
-    static constexpr const auto& names() noexcept { return _names; } \
-    static constexpr const auto& values() noexcept { return _values; } \
-    static constexpr std::size_t size() noexcept { return sizeof(_array) / sizeof(enum_type); } \
-    \
-    static constexpr const char* to_string(enum_type enumer) \
-    { \
-        switch (enumer) { X_FOREACH(ENUM_NAME)(X_ENUMER_TO_STRING) } \
-        return nullptr; \
-    } \
+    X_DEFINE_ENUM_TRAITS_BODY(ENUM_NAME) \
 };
 
 namespace x
