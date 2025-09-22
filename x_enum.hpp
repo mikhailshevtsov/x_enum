@@ -7,7 +7,7 @@
 #include <string_view>
 #include <optional>
 
-#define X_FOREACH(ENUM_NAME) X_##ENUM_NAME
+#define X_FOREACH(ENUM_NAME) X_ENUM_##ENUM_NAME
 
 #define X_DEFINE_ENUMER(NAME, ...) NAME __VA_OPT__(=) __VA_ARGS__,
 #define X_ENUMER(NAME, ...) enum_type::NAME,
