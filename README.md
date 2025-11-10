@@ -5,7 +5,7 @@ Lightweight zero-cost cross-platform header-only C++ library for introducing ref
 - Only one header, no dependencies
 - C++20-compatible
 - Cross-platform
-- Introduces reflection to existing native С++-enums
+- Introduces reflection to existing native С++ enums
 - Based on X macro technology, does not make any use of template magic
 - Supports any native С++ enums without restrictions on their size
 
