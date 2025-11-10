@@ -1,5 +1,5 @@
 # x_enum
-Lightweight zero-cost cross-platform header-only C++ library for introducing eflection capabilities to native C++ enums
+Lightweight zero-cost cross-platform header-only C++ library for introducing reflection capabilities to native C++ enums
 
 ## Features
 - Only one header, no dependencies
