@@ -1,4 +1,4 @@
-# MyLib
+# x_enum
 Lightweight zero-cost cross-platform header-only C++ library for introducing eflection capabilities to native C++ enums
 
 ## Features
