@@ -1,7 +1,7 @@
-# x_enum
+# 🧩 x_enum
 Lightweight zero-cost cross-platform header-only C++ library for introducing reflection capabilities to native C++ enums
 
-## Features
+## ✨ Features
 - Only one header, no dependencies
 - C++20-compatible
 - Cross-platform
@@ -9,7 +9,7 @@ Lightweight zero-cost cross-platform header-only C++ library for introducing ref
 - Based on X macro technology, does not make any use of template magic
 - Supports any native С++ enums without restrictions on their size
 
-## Installation
+## 📦 Installation
 Simply copy `x_enum.hpp` into your project or link it via CMake:
 
 ```cmake
@@ -24,7 +24,11 @@ FetchContent_MakeAvailable(x_enum)
 target_link_libraries(your_project PRIVATE x_enum)
 ```
 
-## Example of usage
+## ⚙️ Requirements
+- C++20 or higher
+- GCC 9+, Clang 10+, MSVC 2019+
+
+## 🧠 Example of usage
 ```cpp
 #include "x_enum.hpp"
 #include <iostream>
@@ -89,5 +93,7 @@ int main()
 }
 ```
 
+## 📜 License
+MIT License © 2025 Mikhail Shevtsov
 ## License
 MIT License © 2025 Mikhail Shevtsov
