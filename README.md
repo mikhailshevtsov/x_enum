@@ -95,5 +95,3 @@ int main()
 
 ## 📜 License
 MIT License © 2025 Mikhail Shevtsov
-## License
-MIT License © 2025 Mikhail Shevtsov
